@@ -1,28 +1,17 @@
 package com.acme.modres;
 
-import com.acme.modres.exception.ExceptionHandler;
-
-
 import java.io.IOException;
 
-import java.util.Hashtable;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-
-import javax.management.MBeanServer;
-
-import javax.management.ObjectInstance;
-import javax.management.ObjectName;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 
 @WebServlet({ "/resorts/weather" })
 public class WeatherServlet extends HttpServlet {
@@ -49,7 +38,7 @@ public class WeatherServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest request,
-      HttpServletResponse response) throws IOException, ServletException {
+      HttpServletResponse response) throws IOException {
 
     String methodName = "doGet";
     logger.entering(WeatherServlet.class.getName(), methodName);
@@ -61,13 +50,13 @@ public class WeatherServlet extends HttpServlet {
   }
 
   private void getDefaultWeatherData(String city, HttpServletResponse response)
-      throws ServletException, IOException {
+      throws IOException {
     DefaultWeatherData defaultWeatherData = null;
 
     try {
       defaultWeatherData = new DefaultWeatherData(city);
     } catch (UnsupportedOperationException e) {
-      ExceptionHandler.handleException(e, e.getMessage(), logger);
+      throw e;
     }
 
     ServletOutputStream out = null;
@@ -79,8 +68,7 @@ public class WeatherServlet extends HttpServlet {
       out.print(responseStr.toString());
       logger.log(Level.FINEST, "responseStr: " + responseStr);
     } catch (Exception e) {
-      String errorMsg = "Problem occured when getting the default weather data.";
-      ExceptionHandler.handleException(e, errorMsg, logger);
+      throw e;
     } finally {
 
       if (out != null) {
@@ -95,7 +83,7 @@ public class WeatherServlet extends HttpServlet {
    * Returns the weather information for a given city
    */
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+      throws IOException {
 
     doGet(request, response);
   }
